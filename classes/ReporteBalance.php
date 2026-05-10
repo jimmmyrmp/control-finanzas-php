@@ -1,9 +1,8 @@
 <?php
 // classes/ReporteBalance.php
-// Clase que genera el balance entre entradas y salidas
 
-require_once __DIR__ . '/Entradas.php';
-require_once __DIR__ . '/Salidas.php';
+require_once 'Entradas.php';
+require_once 'Salidas.php';
 
 class ReporteBalance {
     private $entradas;
@@ -14,35 +13,37 @@ class ReporteBalance {
         $this->salidas  = new Salidas();
     }
 
-    public function getEntradas(): array {
+    public function getEntradas() {
         return $this->entradas->obtenerTodas();
     }
 
-    public function getSalidas(): array {
+    public function getSalidas() {
         return $this->salidas->obtenerTodas();
     }
 
-    public function getTotalEntradas(): float {
+    public function getTotalEntradas() {
         return $this->entradas->totalEntradas();
     }
 
-    public function getTotalSalidas(): float {
+    public function getTotalSalidas() {
         return $this->salidas->totalSalidas();
     }
 
-    // Balance = total entradas - total salidas
-    public function getBalance(): float {
+    public function getBalance() {
         return $this->getTotalEntradas() - $this->getTotalSalidas();
     }
 
-    // Retorna porcentajes para el gráfico de pastel
-    public function getPorcentajes(): array {
+    public function getPorcentajes() {
         $total = $this->getTotalEntradas() + $this->getTotalSalidas();
-        if ($total == 0) return ['entradas' => 0, 'salidas' => 0];
-
+        
+        if ($total == 0) {
+            return ['entradas' => 0, 'salidas' => 0];
+        }
+        
         return [
             'entradas' => round(($this->getTotalEntradas() / $total) * 100, 1),
             'salidas'  => round(($this->getTotalSalidas()  / $total) * 100, 1),
         ];
     }
 }
+?>

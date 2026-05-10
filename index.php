@@ -1,21 +1,19 @@
 <?php
-// index.php — Página de Login
 session_start();
 
-// Si ya hay sesión activa, ir directo al dashboard
 if (isset($_SESSION['usuario_id'])) {
     header('Location: dashboard.php');
     exit;
 }
 
 require_once 'classes/Login.php';
-
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_POST) {
     $login = new Login();
-    $email    = trim($_POST['email']    ?? '');
-    $password = trim($_POST['password'] ?? '');
+    
+    $email = isset($_POST['email']) ? $_POST['email'] : '';
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
 
     if ($login->iniciarSesion($email, $password)) {
         header('Location: dashboard.php');
@@ -26,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
   <meta charset="UTF-8">

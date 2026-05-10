@@ -1,12 +1,10 @@
 <?php
 // classes/Conexion.php
-// Clase de conexión a la base de datos con PDO
 
 class Conexion {
     private static $instancia = null;
     private $pdo;
 
-    // Ajusta estos valores según tu XAMPP
     private $host     = '127.0.0.1';
     private $dbname   = 'finanzas_db';
     private $usuario  = 'root';
@@ -14,7 +12,8 @@ class Conexion {
     private $charset  = 'utf8mb4';
 
     private function __construct() {
-        $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset={$this->charset}";
+        // Mantenemos el puerto 3307 que necesita tu computadora
+        $dsn = "mysql:host={$this->host};port=3307;dbname={$this->dbname};charset={$this->charset}";
         $opciones = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -27,11 +26,11 @@ class Conexion {
         }
     }
 
-    // Patrón Singleton — siempre la misma instancia
-    public static function obtener(): PDO {
-        if (self::$instancia === null) {
+    public static function obtener() {
+        if (self::$instancia == null) {
             self::$instancia = new self();
         }
         return self::$instancia->pdo;
     }
 }
+?>

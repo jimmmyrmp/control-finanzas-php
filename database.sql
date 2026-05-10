@@ -1,18 +1,11 @@
--- ============================================================
---  Base de datos: finanzas_db
---  Sistema de Control de Finanzas - Entradas y Salidas
---  Universidad Don Bosco - 2026
--- ============================================================
-
 CREATE DATABASE IF NOT EXISTS finanzas_db
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
 USE finanzas_db;
 
--- ------------------------------------------------------------
 --  Tabla usuarios  (usada por la clase Login)
--- ------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS usuarios (
   id         INT          NOT NULL AUTO_INCREMENT,
   nombre     VARCHAR(100) NOT NULL,
@@ -28,9 +21,8 @@ INSERT INTO usuarios (nombre, email, password) VALUES
    'admin@finanzas.com',
    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
 
--- ------------------------------------------------------------
+
 --  Tabla entradas  (usada por la clase Entradas)
--- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS entradas (
   id            INT            NOT NULL AUTO_INCREMENT,
   tipo_entrada  VARCHAR(100)   NOT NULL,
@@ -41,9 +33,8 @@ CREATE TABLE IF NOT EXISTS entradas (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
+
 --  Tabla salidas   (usada por la clase Salidas)
--- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS salidas (
   id            INT            NOT NULL AUTO_INCREMENT,
   tipo_salida   VARCHAR(100)   NOT NULL,
@@ -54,9 +45,8 @@ CREATE TABLE IF NOT EXISTS salidas (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
+
 --  Datos de ejemplo (para probar el reporte inmediatamente)
--- ------------------------------------------------------------
 INSERT INTO entradas (tipo_entrada, monto, fecha) VALUES
   ('Sueldo del mes',    500.00, CURDATE()),
   ('Cheque de sistema', 300.00, CURDATE()),

@@ -1,63 +1,57 @@
 <?php
 // classes/Entradas.php
-// Clase que maneja el registro y consulta de entradas
 
-require_once __DIR__ . '/Conexion.php';
+require_once 'Conexion.php';
 
 class Entradas {
     private $pdo;
-    private $carpetaFacturas = '../uploads/';
 
     public function __construct() {
         $this->pdo = Conexion::obtener();
     }
 
-    // Registra una entrada nueva en la BD
-    public function registrar(string $tipo, float $monto, string $fecha, array $archivo = []): bool {
-        $rutaFactura = null;
+    public function registrar($tipo, $monto, $fecha, $archivo) {
+        $rutaFactura = "";
 
-        // Subir imagen de factura si se proporcionó
         if (!empty($archivo['name'])) {
             $rutaFactura = $this->subirFactura($archivo);
-            if ($rutaFactura === false) return false;
+            if ($rutaFactura == false) {
+                return false;
+            }
         }
 
-        $stmt = $this->pdo->prepare(
-            "INSERT INTO entradas (tipo_entrada, monto, fecha, factura)
-             VALUES (?, ?, ?, ?)"
-        );
+        $sql = "INSERT INTO entradas (tipo_entrada, monto, fecha, factura) VALUES (?, ?, ?, ?)";
+        $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$tipo, $monto, $fecha, $rutaFactura]);
     }
 
-    // Obtiene todas las entradas ordenadas por fecha descendente
-    public function obtenerTodas(): array {
-        $stmt = $this->pdo->query(
-            "SELECT * FROM entradas ORDER BY fecha DESC, creado_en DESC"
-        );
+    public function obtenerTodas() {
+        $sql = "SELECT * FROM entradas ORDER BY fecha DESC";
+        $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll();
     }
 
-    // Suma total de todas las entradas
-    public function totalEntradas(): float {
-        $stmt = $this->pdo->query("SELECT COALESCE(SUM(monto), 0) AS total FROM entradas");
-        return (float) $stmt->fetch()['total'];
+    public function totalEntradas() {
+        $sql = "SELECT SUM(monto) as total FROM entradas";
+        $stmt = $this->pdo->query($sql);
+        $resultado = $stmt->fetch();
+        return $resultado['total'] ? $resultado['total'] : 0;
     }
 
-    // Sube el archivo de factura a la carpeta uploads/
-    private function subirFactura(array $archivo) {
-        $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf'];
-        $extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
+    private function subirFactura($archivo) {
+        $nombreOriginal = $archivo['name'];
+        $extension = strtolower(pathinfo($nombreOriginal, PATHINFO_EXTENSION));
+        $permitidos = array('jpg', 'jpeg', 'png', 'pdf');
 
-        if (!in_array($extension, $extensionesPermitidas)) {
-            return false;
-        }
+        if (in_array($extension, $permitidos)) {
+            $nuevoNombre = 'entrada_' . time() . '_' . $nombreOriginal;
+            $destino = 'uploads/' . $nuevoNombre;
 
-        $nombreArchivo = 'entrada_' . time() . '_' . uniqid() . '.' . $extension;
-        $destino       = $this->carpetaFacturas . $nombreArchivo;
-
-        if (move_uploaded_file($archivo['tmp_name'], $destino)) {
-            return 'uploads/' . $nombreArchivo;  // ruta relativa que se guarda en BD
+            if (move_uploaded_file($archivo['tmp_name'], $destino)) {
+                return $destino;
+            }
         }
         return false;
     }
 }
+?>

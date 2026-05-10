@@ -1,61 +1,57 @@
 <?php
 // classes/Salidas.php
-// Clase que maneja el registro y consulta de salidas
 
-require_once __DIR__ . '/Conexion.php';
+require_once 'Conexion.php';
 
 class Salidas {
     private $pdo;
-    private $carpetaFacturas = '../uploads/';
 
     public function __construct() {
         $this->pdo = Conexion::obtener();
     }
 
-    // Registra una salida nueva en la BD
-    public function registrar(string $tipo, float $monto, string $fecha, array $archivo = []): bool {
-        $rutaFactura = null;
+    public function registrar($tipo, $monto, $fecha, $archivo) {
+        $rutaFactura = "";
 
         if (!empty($archivo['name'])) {
             $rutaFactura = $this->subirFactura($archivo);
-            if ($rutaFactura === false) return false;
+            if ($rutaFactura == false) {
+                return false;
+            }
         }
 
-        $stmt = $this->pdo->prepare(
-            "INSERT INTO salidas (tipo_salida, monto, fecha, factura)
-             VALUES (?, ?, ?, ?)"
-        );
+        $sql = "INSERT INTO salidas (tipo_salida, monto, fecha, factura) VALUES (?, ?, ?, ?)";
+        $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$tipo, $monto, $fecha, $rutaFactura]);
     }
 
-    // Obtiene todas las salidas
-    public function obtenerTodas(): array {
-        $stmt = $this->pdo->query(
-            "SELECT * FROM salidas ORDER BY fecha DESC, creado_en DESC"
-        );
+    public function obtenerTodas() {
+        $sql = "SELECT * FROM salidas ORDER BY fecha DESC";
+        $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll();
     }
 
-    // Suma total de todas las salidas
-    public function totalSalidas(): float {
-        $stmt = $this->pdo->query("SELECT COALESCE(SUM(monto), 0) AS total FROM salidas");
-        return (float) $stmt->fetch()['total'];
+    public function totalSalidas() {
+        $sql = "SELECT SUM(monto) as total FROM salidas";
+        $stmt = $this->pdo->query($sql);
+        $resultado = $stmt->fetch();
+        return $resultado['total'] ? $resultado['total'] : 0;
     }
 
-    private function subirFactura(array $archivo) {
-        $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf'];
-        $extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
+    private function subirFactura($archivo) {
+        $nombreOriginal = $archivo['name'];
+        $extension = strtolower(pathinfo($nombreOriginal, PATHINFO_EXTENSION));
+        $permitidos = array('jpg', 'jpeg', 'png', 'pdf');
 
-        if (!in_array($extension, $extensionesPermitidas)) {
-            return false;
-        }
+        if (in_array($extension, $permitidos)) {
+            $nuevoNombre = 'salida_' . time() . '_' . $nombreOriginal;
+            $destino = 'uploads/' . $nuevoNombre;
 
-        $nombreArchivo = 'salida_' . time() . '_' . uniqid() . '.' . $extension;
-        $destino       = $this->carpetaFacturas . $nombreArchivo;
-
-        if (move_uploaded_file($archivo['tmp_name'], $destino)) {
-            return 'uploads/' . $nombreArchivo;
+            if (move_uploaded_file($archivo['tmp_name'], $destino)) {
+                return $destino;
+            }
         }
         return false;
     }
 }
+?>
