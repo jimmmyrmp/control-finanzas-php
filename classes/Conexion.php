@@ -13,7 +13,7 @@ class Conexion {
 
     private function __construct() {
         // Mantenemos el puerto 3307 que necesita tu computadora
-        $dsn = "mysql:host={$this->host};port=3307;dbname={$this->dbname};charset={$this->charset}";
+        $dsn = "mysql:host={$this->host};port=3306;dbname={$this->dbname};charset={$this->charset}";
         $opciones = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
