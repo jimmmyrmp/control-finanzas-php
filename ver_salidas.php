@@ -86,13 +86,21 @@ $total   = $salidas->totalSalidas();
               <td><?= date('d/m/Y', strtotime($s['fecha'])) ?></td>
               <td>
                 <?php if ($s['factura']): ?>
-                  <img src="<?= htmlspecialchars($s['factura']) ?>"
-                       alt="Factura"
-                       class="thumb"
-                       onclick="abrirModal('<?= htmlspecialchars($s['factura']) ?>')">
+                  <?php $ext = strtolower(pathinfo($s['factura'], PATHINFO_EXTENSION)); ?>
+                  <?php if ($ext === 'pdf'): ?>
+                    <a href="<?= htmlspecialchars($s['factura']) ?>" target="_blank" 
+                      style="font-size:0.85rem; color:var(--rojo); font-weight:600;">
+                      📄 Ver PDF
+                    </a>
+                  <?php else: ?>
+                    <img src="<?= htmlspecialchars($s['factura']) ?>"
+                        alt="Factura"
+                        class="thumb"
+                        onclick="abrirModal('<?= htmlspecialchars($s['factura']) ?>')">
+                  <?php endif; ?>
                 <?php else: ?>
                   <span class="sin-factura">Sin factura</span>
-                <?php endif; ?>
+                <?php endif; ?>              
               </td>
             </tr>
             <?php endforeach; ?>

@@ -89,10 +89,18 @@ $total    = $entradas->totalEntradas();
               <td><?= date('d/m/Y', strtotime($e['fecha'])) ?></td>
               <td>
                 <?php if ($e['factura']): ?>
-                  <img src="<?= htmlspecialchars($e['factura']) ?>"
-                       alt="Factura"
-                       class="thumb"
-                       onclick="abrirModal('<?= htmlspecialchars($e['factura']) ?>')">
+                  <?php $ext = strtolower(pathinfo($e['factura'], PATHINFO_EXTENSION)); ?>
+                  <?php if ($ext === 'pdf'): ?>
+                    <a href="<?= htmlspecialchars($e['factura']) ?>" target="_blank" 
+                      style="font-size:0.85rem; color:var(--verde); font-weight:600;">
+                      📄 Ver PDF
+                    </a>
+                  <?php else: ?>
+                    <img src="<?= htmlspecialchars($e['factura']) ?>"
+                        alt="Factura"
+                        class="thumb"
+                        onclick="abrirModal('<?= htmlspecialchars($e['factura']) ?>')">
+                  <?php endif; ?>
                 <?php else: ?>
                   <span class="sin-factura">Sin factura</span>
                 <?php endif; ?>
